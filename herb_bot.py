@@ -12,10 +12,14 @@ from discord.utils import get
 
 # There's probably a better way to import everything...
 from config.messages import *
-from config.secret import *
 from config.paths import *
 from config.ids import *
 from static.gifs import *
+
+# I should've used pathlib
+key_path = "C:\\Users\\Josh\\Desktop\\Misc\\secret_key\\secret.txt"
+with open(key_path, "r") as f:
+    secret_key = f.readline()
 
 
 nest_asyncio.apply()    # Unnecessary for production
