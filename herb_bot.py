@@ -88,6 +88,16 @@ async def on_voice_state_update (member, before, after):
                 bot.voice_bot_ids.remove(before.channel.id)
                 
                 await before.channel.delete()
+                
+        if after_id == click_to_create_id:
+            # Create the voice channel:
+            created_channel = await guild.create_voice_channel("new_channel", 
+                                                               category=category) 
+            # Adds the channel ID to "global" var
+            bot.voice_bot_ids += [created_channel.id]
+            
+            # Move them to the channel
+            await member.move_to(created_channel)
          
                     
 @bot.command()
@@ -163,9 +173,6 @@ async def voice (ctx, command, arg):
     
     else:
         await ctx.send("My creator does not allow me to rename human-made channels :(")
-
-
-
 
 
 
