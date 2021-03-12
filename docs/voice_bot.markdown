@@ -140,6 +140,20 @@ $voice limit 3
 <img src="https://cdn.discordapp.com/attachments/820010605628096522/820017850134691863/unknown.png" width="241" height="100"/>
 
 
+<br>
+<button class="btn js-toggle-dark-mode">Toggle Light/Dark mode</button>
+
+<script>
+const toggleDarkMode = document.querySelector('.js-toggle-dark-mode');
+
+jtd.addEvent(toggleDarkMode, 'click', function(){
+  if (jtd.getTheme() === 'dark') {
+    jtd.setTheme('light');
+  } else {
+    jtd.setTheme('dark');
+  }
+});
+</script>
 
 
 

@@ -48,17 +48,8 @@ The current role toggle bot is a nightmare. I plan to add a role toggle command 
 ## EDDB Stuff
 Similar to commands such as `!from x to y`, I plan on adding commands that uses the EDDB/Inara data dumps. Stuff like finding the nearest finds the closest Stations/ISF/Material Traders, display the latest GalNet articles, etc.
 
+
 <br>
-<button class="btn js-toggle-dark-mode">Toggle Light/Dark mode</button>
+<button class="btn js-toggle-dark-mode" onClick="javascript:window.location.href='https://www.youtube.com/watch?v=dQw4w9WgXcQ'">Dark mode</button>
 
-<script>
-const toggleDarkMode = document.querySelector('.js-toggle-dark-mode');
 
-jtd.addEvent(toggleDarkMode, 'click', function(){
-  if (jtd.getTheme() === 'dark') {
-    jtd.setTheme('light');
-  } else {
-    jtd.setTheme('dark');
-  }
-});
-</script>
