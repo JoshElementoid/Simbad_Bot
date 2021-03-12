@@ -23,7 +23,7 @@ color_scheme: "dark"
 
 # Build settings
 remote_theme: pmarsceill/just-the-docs
-
+logo: "https://cdn.discordapp.com/attachments/125498072661753856/813825920993198101/New_Logo_1500x1500_simbad.png"
 
 # Exclude from processing.
 # The following items will not be processed, by default.
