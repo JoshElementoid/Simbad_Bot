@@ -72,8 +72,8 @@ async def on_voice_state_update (member, before, after):
 </details>
 
 To create a voice channel, simply join the channel called "click_to_create". A new channel will be created for you, and you will be moved to the new channel. <br>
-
-<img src="https://cdn.discordapp.com/attachments/820010605628096522/820017949389619240/unknown.png">
+<br>
+<img src="https://cdn.discordapp.com/attachments/820010605628096522/820017949389619240/unknown.png" width="241" height="100"/>
 
 --- 
 
@@ -137,7 +137,7 @@ $voice limit 3
 
 <br>
 
-<img src="https://cdn.discordapp.com/attachments/820010605628096522/820017850134691863/unknown.png" width="335" height="139"/>
+<img src="https://cdn.discordapp.com/attachments/820010605628096522/820017850134691863/unknown.png" width="241" height="100"/>
 
 
 
