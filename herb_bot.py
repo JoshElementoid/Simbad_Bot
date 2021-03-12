@@ -170,7 +170,7 @@ async def voice (ctx, command, arg):
 
 
 
-#%%
+#%% Running the bot
 bot.run(secret_key)
 
 
