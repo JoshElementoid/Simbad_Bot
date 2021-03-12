@@ -71,5 +71,86 @@ async def on_voice_state_update (member, before, after):
 </div>
 </details>
 
-To create a voice channel, simply join the channel called "click_to_create"
-<img src=C:/Users/Josh/Desktop/Misc/Simbad/static/site_images/click_to_create.PNG>
+To create a voice channel, simply join the channel called "click_to_create". A new channel will be created for you, and you will be moved to the new channel. <br>
+
+<img src="https://cdn.discordapp.com/attachments/820010605628096522/820017949389619240/unknown.png">
+
+--- 
+
+## Voice Channel Commands
+
+<details>
+<summary>Potato Code</summary>
+<div class="code-example" markdown="1">
+```python
+@bot.command()
+async def voice (ctx, command, arg):
+    guild = ctx.guild
+    member = ctx.message.author
+    channel = member.voice.channel 
+    if channel.id in bot.voice_bot_ids:
+        if command.lower() == "name":
+            new_name = str(arg)[:20]
+            await channel.edit(name=new_name)
+            await ctx.send("Voice channel renamed to {}".format(new_name))
+
+        if command.lower() == "limit":
+            await channel.edit(user_limit=int(arg[0]))
+            await ctx.send("Limited to max {} people".format(int(arg[0])))
+    else:
+        await ctx.send("My creator does not allow me to rename human-made channels :(")
+```
+</div>
+</details>
+
+Changes the property of the voice channel you are currently in. Will only work for bot-created channels.
+
+### Usage:
+
+{% highlight markdown %}
+$voice <attribute> <new> 
+{% endhighlight %}
+
+<br>
+
+`attribute` - What you want to change about the channel. Currently supports:
+- `name` - the name of the channel
+- `limit` - the maximum number of members in the channel
+
+<br>
+
+`new` - The new value of the selected `attribute`.
+ - If `limit` was passed, `new` must be a number between 1 and 99
+ 
+ <br>
+ 
+### Example Commands:
+Changing voice channel name
+{% highlight markdown %}
+$voice name Braben_Tunnel
+{% endhighlight %}
+
+Limiting maximum number of users in voice channel to 3:
+{% highlight markdown %}
+$voice limit 3
+{% endhighlight %}
+
+<br>
+
+<img src="https://cdn.discordapp.com/attachments/820010605628096522/820017850134691863/unknown.png" width="335" height="139"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
