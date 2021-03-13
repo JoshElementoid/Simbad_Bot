@@ -1,0 +1,2 @@
+available_roles = "Anti-Xeno,No Man's Sky,Titanfall,Destiny 2,Forza,Bgs,Explorer,Cqc,Colonia,Money,Ark,R6s,Division,Scientist,Duel Rats,Pirate,The Crew,Warframe,Overwatch,Elite,Trainee,Xbox,Welcomer,Playstation,Halo,MCC"
+available_roles = available_roles.split(",")

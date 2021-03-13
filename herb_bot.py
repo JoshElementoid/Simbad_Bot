@@ -6,6 +6,7 @@ Created on Thu Mar 11 00:32:58 2021
 """
 
 import discord, nest_asyncio, requests
+import helper, os
 
 from discord.ext import commands
 from discord.utils import get
@@ -14,18 +15,22 @@ from discord.utils import get
 from config.messages import *
 from config.paths import *
 from config.ids import *
+from config.role_perms import *
 from static.gifs import *
+from static.public_roles import*
+
+nest_asyncio.apply()    # Unnecessary for production
 
 # I should've used pathlib
 key_path = "C:\\Users\\Josh\\Desktop\\Misc\\secret_key\\secret.txt"
 with open(key_path, "r") as f:
-    secret_key = f.readline()
+    secret_key = f.readline()   # Oh so secret
+    f.close()
 
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix='$', intents=intents)  # Bot commands start with "$"
 
-nest_asyncio.apply()    # Unnecessary for production
-bot = commands.Bot(command_prefix='$')  # Bot commands start with "$"
-
-bot.voice_bot_ids = []  # "Global" var to keep track of all the created channel ids
+bot.voice_bot_ids = []  # "Global" var to keep track of all the bot-created channel ids
 
 @bot.event
 async def on_ready ():
@@ -101,6 +106,7 @@ async def on_voice_state_update (member, before, after):
          
                     
 @bot.command()
+@commands.has_any_role(*command_role_perms["welcome"])
 async def welcome (ctx, user: discord.User):
     """
     Syntax: $welcome @User
@@ -109,7 +115,6 @@ async def welcome (ctx, user: discord.User):
     welcome message in #general.
     
     """
-    
     # Get role:
     member = ctx.message.author
     role = get(member.guild.roles, name="Elite")
@@ -137,12 +142,19 @@ async def free_money (ctx):
     
     
 @bot.command()
-async def gif (ctx, meme):
-    link = gif_dict[str(meme).lower()]
-    await ctx.send(link)
-    
+@commands.has_any_role(*command_role_perms["gif"])
+async def gif (ctx, meme=None):
+    if meme:
+        link = gif_dict[str(meme).lower()]
+        await ctx.send(link)
+        
+    else:
+        info = helper.dict_list(gif_dict)
+        await ctx.send("Available gifs: `{}`".format(info))
+        
     
 @bot.command()
+@commands.has_any_role(*command_role_perms["voice"])
 async def voice (ctx, command, arg):
     """ 
     Modifies the user's current voice channel
@@ -154,12 +166,11 @@ async def voice (ctx, command, arg):
         name: changes the voice channel name to arg
         limit: limits the voice channel's max number of people to arg
     
+    """
     
-    """ 
     guild = ctx.guild
     member = ctx.message.author
     channel = member.voice.channel 
-    
     
     if channel.id in bot.voice_bot_ids:
         if command.lower() == "name":
@@ -175,7 +186,103 @@ async def voice (ctx, command, arg):
         await ctx.send("My creator does not allow me to rename human-made channels :(")
 
 
+@bot.command ()
+@commands.has_any_role(*command_role_perms["roles"])
+async def roles (ctx, *args):   
+    
+    guild = ctx.guild
+    # If no args, sends a message of all the publicly available roles
+    if not any(args):
+        info = ", ".join(available_roles)   
+        await ctx.send(info)
+        
+    # If the first arg is "toggle":
+    elif args[0].lower() == "toggle":
+        num_args = len(args)
 
+        # If there is a mention (aka used on another person):
+        if "@" in args[1]:  
+            # Get the top role of the mentioned user:
+            mentioned_id = helper.parse_into_id(args[1])
+            mentioned_member = guild.get_member(int(mentioned_id))
+            mentioned_top_role = mentioned_member.top_role
+            
+            # Get the top role of the message author:
+            author = ctx.message.author
+            author_top_role = author.top_role
+            
+            # If the message author has a higher role than the mentioned:
+            if author_top_role > mentioned_top_role:
+                # Parse into a list of wanted roles:
+                wanted_roles = " ".join(args[2:]).split(",")
+                # Check if the wanted roles are valid, publicly available roles
+                check = set(wanted_roles).issubset(set(available_roles))
+                
+                if check:
+                    req_roles = [get(guild.roles,name=x)   # Requested roles
+                                 for x in wanted_roles]   
+                    cur_roles = mentioned_member.roles     # Current roles
+                    
+                    to_add = [x for x in req_roles         # Roles to add 
+                              if x not in cur_roles]
+                    to_remove = [x for x in req_roles      # Roles to remove
+                                 if x in cur_roles]
+                    
+                    # Messages to send
+                    to_add_str = ", ".join([x.name for x in to_add])
+                    to_remove_str = ", ".join([x.name for x in to_remove])
+
+                    # Toggle the roles
+                    await mentioned_member.add_roles(*to_add)
+                    await mentioned_member.remove_roles(*to_remove)
+                    
+                    # Sends message in channel
+                    if to_add:
+                        await ctx.send("Roles added: `{}`".format(to_add_str))
+                    if to_remove:
+                        await ctx.send("Roles removed: `{}`".format(to_remove_str))
+                     
+                else:
+                    await ctx.send("At least 1 specified role is invalid")
+            
+            else:
+                await ctx.send("You do not have permission to modify that person's roles")
+                
+                
+        else:   # If there is no mention, do the same things for the message's author
+            author = ctx.message.author
+            wanted_roles = " ".join(args[1:]).split(",")
+            # Check if the wanted roles are valid, publicly available roles
+            check = set(wanted_roles).issubset(set(available_roles))
+            if check:
+                req_roles = [get(guild.roles,name=x)   # Requested roles
+                             for x in wanted_roles]   
+                cur_roles = author.roles     # Current roles
+                
+                to_add = [x for x in req_roles         # Roles to add 
+                          if x not in cur_roles]
+                to_remove = [x for x in req_roles      # Roles to remove
+                             if x in cur_roles]
+                
+                # Messages to send
+                to_add_str = ", ".join([x.name for x in to_add])
+                to_remove_str = ", ".join([x.name for x in to_remove])
+                
+                await author.add_roles(*to_add)
+                await author.remove_roles(*to_remove)             
+        
+                # Sends message in channel
+                if to_add:
+                    await ctx.send("Roles added: `{}`".format(to_add_str))
+                if to_remove:
+                    await ctx.send("Roles removed: `{}`".format(to_remove_str))
+                    
+            else:
+                await ctx.send("At least 1 specified role is invalid")
+                
+    else:
+        print("Else")
+        print(args)
 
 #%% Running the bot
 bot.run(secret_key)
