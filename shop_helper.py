@@ -76,10 +76,25 @@ class shop (object):
     
     def show_inv (self, member_id):
         
-        member_df = self.bal_df["member_id"] == member_id
+        """
+        Given a member_id, returns a zip in the format of:
+        [(item, amount), (item, amount), etc..]
+            
+        Example:
+        [("balance", 500), ("apple", 1), ("orange", 5)]
         
+        """
+        
+        # Gets the quantity of every shop item that the user has:
+        df = self.bal_df
+        df = df.loc[df["member_id"] == member_id, "balance":]
+        
+        col_labels = list(df.columns)   # column names
+        quan_arr = np.asarray(df, dtype="uint32")[0]
+         
+        zipped = zip(col_labels, quan_arr)
 
-        return
+        return zipped
     
         
     def buy (self, member_id, item_name, quantity=1):
@@ -115,14 +130,14 @@ class shop (object):
         # Remove 
         
         # Deducting money from user balance:
-        self.change_balance (member_id, -item_price.item())
+        self.change_balance (member_id, -total_price)
         
         # Adding item to inventory:
         self.bal_df.loc[member_df, item_name.lower()] += quantity
         
         # Returns a message of the transaction:
-        msg = "You succesfully purchased {} for {} Simbits\n".format(
-            item_name.title(), item_price.item())
+        msg = "You succesfully purchased {} {} for {} Simbits\n".format(
+            quantity, item_name.title(), total_price)
 
         msg += "New balance: {}".format(
             self.bal_df.loc[member_df, "balance"].item())
@@ -163,38 +178,19 @@ market.name_init()
 #%%
 market.member_init(me_id)
 market.member_init(other_id)
-
-
+market.change_balance(me_id, 50000)
 
 #%% Buying
 
 trans_msg = market.buy(me_id, "ice cream")
+trans_msg = market.buy(me_id, "orange", 5)
     
-print(trans_msg)
+# print(trans_msg)
 
 #%%
+inv = market.show_inv(me_id)
 
-df = market.bal_df
-lmao = df.loc[df["member_id"]==me_id]
-
-test = np.asarray(lmao, dtype="uint16")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print(list(inv))
 
 
 
