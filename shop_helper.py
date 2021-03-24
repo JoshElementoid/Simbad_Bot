@@ -164,33 +164,36 @@ class shop (object):
 
 
 #%%
-me_id = 117431457202438148
-other_id = 666454811884912640
 
-path1 = "C:\\Users\\Josh\\Desktop\\Misc\\Simbad\\static\\cash_money.csv"
-path2 = "C:\\Users\\Josh\\Desktop\\Misc\\Simbad\\config\\shop_items.csv"
-path3 = "C:\\Users\\Josh\\Desktop\\Misc\\Simbad\\static\\inventory.csv"
-
-market = shop(path1, path2)
-
-market.name_init()
-
-#%%
-market.member_init(me_id)
-market.member_init(other_id)
-market.change_balance(me_id, 50000)
-
-#%% Buying
-
-trans_msg = market.buy(me_id, "ice cream")
-trans_msg = market.buy(me_id, "orange", 5)
+if __name__ == "__main__":
     
-# print(trans_msg)
-
-#%%
-inv = market.show_inv(me_id)
-
-print(list(inv))
+    me_id = 117431457202438148
+    other_id = 666454811884912640
+    
+    path1 = "C:\\Users\\Josh\\Desktop\\Misc\\Simbad\\static\\cash_money.csv"
+    path2 = "C:\\Users\\Josh\\Desktop\\Misc\\Simbad\\config\\shop_items.csv"
+    path3 = "C:\\Users\\Josh\\Desktop\\Misc\\Simbad\\static\\inventory.csv"
+    
+    market = shop(path1, path2)
+    
+    market.name_init()
+    
+    #%%
+    market.member_init(me_id)
+    market.member_init(other_id)
+    market.change_balance(me_id, 50000)
+    
+    #%% Buying
+    
+    trans_msg = market.buy(me_id, "ice cream")
+    trans_msg = market.buy(me_id, "orange", 5)
+        
+    # print(trans_msg)
+    
+    #%%
+    inv = market.show_inv(me_id)
+    
+    print(list(inv))
 
 
 

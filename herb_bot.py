@@ -186,7 +186,7 @@ async def voice (ctx, command, arg):
         await ctx.send("My creator does not allow me to rename human-made channels :(")
 
 
-@bot.command ()
+@bot.command()
 @commands.has_any_role(*command_role_perms["roles"])
 async def roles (ctx, *args):   
     
@@ -283,6 +283,12 @@ async def roles (ctx, *args):
     else:
         print("Else")
         print(args)
+
+
+@bot.command()
+async def shop(ctx, *args):
+    pass
+
 
 #%% Running the bot
 bot.run(secret_key)

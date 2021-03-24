@@ -1,6 +1,6 @@
-,id,item,price,quantity
-0,0,apple,10,5
-1,1,banana,20,6
-2,2,orange,55,9999
-3,3,ice cream,10000,30
-4,4,vodka,25,0
+,item,price,quantity
+0,apple,10,5
+1,banana,20,6
+2,orange,55,9999
+3,ice cream,10000,30
+4,vodka,25,0
