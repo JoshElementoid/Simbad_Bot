@@ -352,8 +352,8 @@ async def shop(ctx, *args):
         use this. This does not decrease your own balance
         
         """
-        # if member.top_role >= shop_manager_role:
-        if True:
+    
+        if member.top_role >= shop_manager_role:
             market.change_balance(member_id, args[-1])
             
             await ctx.send("Done.")
@@ -389,7 +389,6 @@ async def shop(ctx, *args):
         if len(args) > 2:
             quantity = args[2]
         
-        
         msg = market.buy(author_id, item, quantity=int(quantity))   
         
         await ctx.send(msg)
@@ -405,7 +404,7 @@ async def shop(ctx, *args):
         is_elementoid = int(author.id) == 117431457202438148
         mod_role = get(member.guild.roles, name="Moderator")
         
-        if is_elementoid:
+        if is_elementoid or member.top_role >= mod_role:
             market.reload()
             
             await ctx.send("Market reinitialized!")
