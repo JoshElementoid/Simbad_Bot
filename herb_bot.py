@@ -5,8 +5,9 @@ Created on Thu Mar 11 00:32:58 2021
 @author: Josh
 """
 
-import discord, nest_asyncio, requests
-import helper, os
+import discord, nest_asyncio, requests, os
+
+from helper_functions import helper, shop_helper
 
 from discord.ext import commands
 from discord.utils import get
@@ -21,14 +22,18 @@ from static.public_roles import*
 
 nest_asyncio.apply()    # Unnecessary for production
 
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix='$', intents=intents)  # Bot commands start with "$"
+
+
 # I should've used pathlib
 key_path = "C:\\Users\\Josh\\Desktop\\Misc\\secret_key\\secret.txt"
+
 with open(key_path, "r") as f:
     secret_key = f.readline()   # Oh so secret
     f.close()
 
-intents = discord.Intents.all()
-bot = commands.Bot(command_prefix='$', intents=intents)  # Bot commands start with "$"
+market = shop_helper.shop(shop_money_path, shop_item_path)
 
 bot.voice_bot_ids = []  # "Global" var to keep track of all the bot-created channel ids
 
@@ -287,8 +292,127 @@ async def roles (ctx, *args):
 
 @bot.command()
 async def shop(ctx, *args):
-    pass
-
+    
+    member = ctx.message.author
+    member_id = member.id
+    command_message = ctx.message.content
+    
+    shop_manager_role = get(member.guild.roles, name="Moderator")
+    
+    #### Initialization stuff ####
+    arg_len = len(args)     # Profound statement
+    
+    # Check for mentions in the message:
+    if arg_len == 0:
+        command = "help"
+    else:
+        command = args[0]
+        
+    # Check for mentions    
+    if arg_len > 1:
+        if "@" in args[1]:
+            member_id = int(helper.parse_into_id(args[1]))        
+        
+    exist = any(market.bal_df["member_id"] == member_id)
+        
+    
+    if not exist:
+        market.member_init(member_id)   # Initializes member in the df
+        
+        await ctx.send("New Member Added")
+    
+    #### Shop commands ####
+    
+    # show
+    if command.lower() == "show":
+        msg = market.shop_show()
+        await ctx.send("```python\n{}```".format(msg))
+    
+    # inventory
+    if command.lower() == "inventory":
+        """
+        Shows your inventory. If there is a mention in the 1st index of the arg, 
+        it will show the mentioned member's inventory instead.
+        
+        """
+        msg = market.show_inv(member_id)
+        
+        await ctx.send("```python\n{}```".format(msg))
+    
+    
+    if command.lower() == "balance":
+        bal = market.member_balance(member_id)
+        msg = "```python\nYour account balance: {}```".format(float(bal))
+        
+        await ctx.send(msg)
+        
+    if command.lower() == "award":
+        """
+        Increase someone's balance by amount. Only Moderator or higher can
+        use this. This does not decrease your own balance
+        
+        """
+        # if member.top_role >= shop_manager_role:
+        if True:
+            market.change_balance(member_id, args[-1])
+            
+            await ctx.send("Done.")
+            
+        else:
+            await ctx.send("You don't have permission")
+            
+       
+    if command.lower() == "donate":
+        """
+        Gives some of your money to someone else
+        
+        """
+        amount = args[-1]
+        author_id = ctx.message.author.id
+        
+        msg = market.donate(author_id, member_id, float(amount))
+        
+        await ctx.send(msg)
+        
+        
+    if command.lower() == "buy":
+        author_id = ctx.message.author.id
+        
+        if int(author_id) != int(member_id):
+            await ctx.send("You can't buy for someone else, dummy")   
+            
+            return
+        
+        item = args[1]
+        quantity = 1
+        
+        if len(args) > 2:
+            quantity = args[2]
+        
+        
+        msg = market.buy(author_id, item, quantity=int(quantity))   
+        
+        await ctx.send(msg)
+        
+        
+    if command.lower() == "reload":
+        """
+        Reinitializes the market object. Reserved for Elementoid, Moderator, 
+        and Admins
+        
+        """
+        author = ctx.message.author
+        is_elementoid = int(author.id) == 117431457202438148
+        mod_role = get(member.guild.roles, name="Moderator")
+        
+        if is_elementoid:
+            market.reload()
+            
+            await ctx.send("Market reinitialized!")
+            return
+        
+        await ctx.send("Nah")
+            
 
 #%% Running the bot
 bot.run(secret_key)

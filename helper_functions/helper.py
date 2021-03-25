@@ -26,22 +26,16 @@ def parse_into_id (string):
     
     return parsed
 
-def r (*args):
+def id_from_message (string):
+    id_ = string.split("<")[1].split(">")[0]
+    id_ = parse_into_id(id_)
     
-    wanted = args[1:]
-    for x in wanted:
-        print(x)
+    return int(id_)
     
-    return 
-
-
 
 
 if __name__ == "__main__":
     
-    cur_roles = [1,2,3,4,5,6]
-    req_roles = [1,2,3,4,5,6,7,8,9]
+    m = "$shop give <!12345> 55"
     
-    to_add = [x for x in req_roles if x not in cur_roles]
-    to_remove = [x for x in req_roles if x in cur_roles]
-    
+    id_from_message(m)
