@@ -1,6 +1,5 @@
 item,price,quantity
-apple,10,0
-banana,20,0
-orange,55,0
-ice_cream,10000,0
-vodka,25,0
+peanuts,10,100.0
+walnuts,25,inf
+cashews,15,25.0
+pistachios,50,9999.0

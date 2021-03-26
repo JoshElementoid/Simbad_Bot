@@ -224,6 +224,8 @@ class shop (object):
         # The amount of the item the member currently have:
         item_quan = self.bal_df.loc[member_df, item].item()
         
+        print(item_quan)
+        
         if item_quan - quantity < 0:
             msg = "Failed. The person has {} {}, but you are trying to remove {} {}"
             msg = msg.format(item_quan, item.title(), quantity, item.title())
@@ -293,11 +295,8 @@ if __name__ == "__main__":
     path2 = "C:\\Users\\Josh\\Desktop\\Misc\\Simbad\\config\\shop_items.csv"
     
     market = shop(path1, path2)
-    # foo = market.shop_show()
+    market.name_init()
     
-    member_inv = market.show_inv(me_id)
-
-    print(member_inv)
 
 
 

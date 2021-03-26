@@ -302,7 +302,7 @@ async def shop(ctx, *args):
     #### Initialization stuff ####
     arg_len = len(args)     # Profound statement
     
-    # Check for mentions in the message:
+
     if arg_len == 0:
         command = "help"
     else:
@@ -318,8 +318,6 @@ async def shop(ctx, *args):
     
     if not exist:
         market.member_init(member_id)   # Initializes member in the df
-        
-        await ctx.send("New Member Added")
     
     #### Shop commands ####
     
@@ -329,7 +327,7 @@ async def shop(ctx, *args):
         await ctx.send("```python\n{}```".format(msg))
     
     # inventory
-    if command.lower() == "inventory":
+    elif command.lower() == "inventory":
         """
         Shows your inventory. If there is a mention in the 1st index of the arg, 
         it will show the mentioned member's inventory instead.
@@ -340,13 +338,13 @@ async def shop(ctx, *args):
         await ctx.send("```python\n{}```".format(msg))
     
     
-    if command.lower() == "balance":
+    elif command.lower() == "balance":
         bal = market.member_balance(member_id)
         msg = "```python\nYour account balance: {}```".format(float(bal))
         
         await ctx.send(msg)
         
-    if command.lower() == "award":
+    elif command.lower() == "award":
         """
         Increase someone's balance by amount. Only Moderator or higher can
         use this. This does not decrease your own balance
@@ -362,7 +360,7 @@ async def shop(ctx, *args):
             await ctx.send("You don't have permission")
             
        
-    if command.lower() == "donate":
+    elif command.lower() == "donate":
         """
         Gives some of your money to someone else
         
@@ -375,7 +373,7 @@ async def shop(ctx, *args):
         await ctx.send(msg)
         
         
-    if command.lower() == "buy":
+    elif command.lower() == "buy":
         author_id = ctx.message.author.id
         
         if int(author_id) != int(member_id):
@@ -383,18 +381,42 @@ async def shop(ctx, *args):
             
             return
         
+        # Finds the item and quantity the member wants to buy:
         item = args[1]
         quantity = 1
         
         if len(args) > 2:
             quantity = args[2]
         
+        # Call the buy method:
         msg = market.buy(author_id, item, quantity=int(quantity))   
         
         await ctx.send(msg)
+    
+    
+    elif command.lower() == "remove":
+        mod_role = get(member.guild.roles, name="Moderator")
+        # Finds the item and quantity of the item to be removed:
+        quantity = 1
+        item = args[2]
+        
+        if len(args) > 3:
+            quantity = int(args[3])
+            
+            if quantity <= 0:
+                await ctx.send("What the fuck?")
+                return
+        
+        if member.top_role >= mod_role:
+            msg = market.remove_item(member_id, item, quantity)
+            await ctx.send(msg)
+            
+            return   
+        
+        await ctx.send("You don't have permission :(") 
         
         
-    if command.lower() == "reload":
+    elif command.lower() == "reload":
         """
         Reinitializes the market object. Reserved for Elementoid, Moderator, 
         and Admins
@@ -411,8 +433,8 @@ async def shop(ctx, *args):
             return
         
         await ctx.send("Nah")
-            
-
+                
+    
 #%% Running the bot
 bot.run(secret_key)
 
